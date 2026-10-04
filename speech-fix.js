@@ -21,36 +21,20 @@
     const synth=window.speechSynthesis;
     try{synth.cancel();synth.resume()}catch(e){}
     const u=new SpeechSynthesisUtterance(text);
-    u.lang='pl-PL';
-    u.rate=.78;
-    u.pitch=1;
-    u.volume=1;
-    const v=polishVoice(synth); if(v)u.voice=v;
-    window.__polishUtterance=u;
-    activeButton=button;
-    button.textContent='Reproduciendo…';
-    button.disabled=true;
-    u.onstart=()=>{
-      clearTimeout(watchdog);
-      watchdog=setTimeout(()=>{try{synth.cancel()}catch(e){} resetButton()},15000);
-    };
-    u.onend=resetButton;
-    u.onerror=resetButton;
-    // En iOS la llamada debe producirse directamente dentro del gesto del usuario.
+    u.lang='pl-PL';u.rate=.78;u.pitch=1;u.volume=1;
+    const v=polishVoice(synth);if(v)u.voice=v;
+    window.__polishUtterance=u;activeButton=button;
+    button.textContent='Reproduciendo…';button.disabled=true;
+    u.onstart=()=>{clearTimeout(watchdog);watchdog=setTimeout(()=>{try{synth.cancel()}catch(e){} resetButton()},15000)};
+    u.onend=resetButton;u.onerror=resetButton;
     synth.speak(u);
-    // Si WebKit no inicia la voz, nunca dejamos el botón bloqueado.
-    watchdog=setTimeout(()=>{
-      if(!synth.speaking){try{synth.cancel()}catch(e){} resetButton()}
-    },1800);
+    watchdog=setTimeout(()=>{if(!synth.speaking){try{synth.cancel()}catch(e){} resetButton()}},1800);
   }
 
   document.addEventListener('click',e=>{
-    const button=e.target.closest('#phr .listen, #trout .listen');
-    if(!button)return;
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    const row=button.closest('.ph, .result');
-    const text=row?.querySelector('.pl')?.textContent?.trim();
+    const button=e.target.closest('#phr .listen, #trout .listen');if(!button)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const row=button.closest('.ph, .result');const text=row?.querySelector('.pl')?.textContent?.trim();
     if(text)speakNow(text,button);
   },true);
 
@@ -58,4 +42,18 @@
     try{speechSynthesis.getVoices()}catch(e){}
     speechSynthesis.addEventListener?.('voiceschanged',()=>{try{speechSynthesis.getVoices()}catch(e){}});
   }
+})();
+
+/* Carga no bloqueante de la sincronización familiar. Se hace aquí para no
+   alterar el arranque ni el diseño de la aplicación. */
+(()=>{
+  const sdk=document.createElement('script');
+  sdk.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  sdk.onload=()=>{
+    const sync=document.createElement('script');
+    sync.src='sync.js?v=20261005-family1';
+    document.head.appendChild(sync);
+  };
+  sdk.onerror=()=>console.warn('Sin conexión: se mantiene la copia local del itinerario.');
+  document.head.appendChild(sdk);
 })();
