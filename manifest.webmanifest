@@ -8,10 +8,10 @@
   "theme_color": "#f5f1e8",
   "icons": [
     {
-      "src": "/polonia-icon.svg",
+      "src": "/polonia-icon.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
