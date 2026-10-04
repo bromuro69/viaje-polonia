@@ -1,57 +1,61 @@
 (()=>{
-  let currentAudio=null;
+  let activeButton=null;
+  let watchdog=null;
 
-  function restore(button){
-    if(button){button.textContent='Escuchar';button.disabled=false}
+  function resetButton(){
+    clearTimeout(watchdog);
+    if(activeButton){activeButton.textContent='Escuchar';activeButton.disabled=false;activeButton=null}
   }
 
-  function nativeFallback(text,button){
+  function polishVoice(synth){
+    const voices=synth.getVoices?.()||[];
+    return voices.find(v=>/^pl(?:-|_)/i.test(v.lang))||voices.find(v=>/polski|polish|zosia/i.test(v.name))||null;
+  }
+
+  function speakNow(text,button){
+    resetButton();
     if(!('speechSynthesis' in window)||!window.SpeechSynthesisUtterance){
-      restore(button);
-      alert('No se ha podido reproducir el audio. Comprueba la conexión a Internet.');
+      alert('Este iPhone no tiene disponible la reproducción de voz.');
       return;
     }
-    try{
-      const synth=window.speechSynthesis;
-      synth.cancel();
-      const u=new SpeechSynthesisUtterance(text);
-      u.lang='pl-PL';u.rate=.82;u.pitch=1;u.volume=1;
-      const voices=synth.getVoices?.()||[];
-      const voice=voices.find(v=>/^pl[-_]/i.test(v.lang))||voices.find(v=>/pol/i.test(v.name));
-      if(voice)u.voice=voice;
-      window.__polishUtterance=u;
-      u.onend=()=>restore(button);
-      u.onerror=()=>{restore(button);alert('No se ha podido reproducir el audio. Comprueba la conexión a Internet.')};
-      try{synth.resume()}catch(e){}
-      synth.speak(u);
-    }catch(e){restore(button)}
-  }
-
-  function playPolish(text,button){
-    if(!text)return;
-    if(currentAudio){try{currentAudio.pause()}catch(e){} currentAudio=null}
-    if('speechSynthesis' in window){try{speechSynthesis.cancel()}catch(e){}}
-    if(button){button.textContent='Reproduciendo…';button.disabled=true}
-
-    // Audio remoto en vez de depender de las voces instaladas de iOS.
-    const url='https://translate.googleapis.com/translate_tts?ie=UTF-8&client=gtx&tl=pl-PL&q='+encodeURIComponent(text);
-    const audio=new Audio();
-    currentAudio=audio;
-    audio.preload='auto';
-    audio.src=url;
-    audio.onended=()=>{currentAudio=null;restore(button)};
-    audio.onerror=()=>{currentAudio=null;nativeFallback(text,button)};
-
-    const p=audio.play();
-    if(p&&typeof p.catch==='function')p.catch(()=>{currentAudio=null;nativeFallback(text,button)});
+    const synth=window.speechSynthesis;
+    try{synth.cancel();synth.resume()}catch(e){}
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='pl-PL';
+    u.rate=.78;
+    u.pitch=1;
+    u.volume=1;
+    const v=polishVoice(synth); if(v)u.voice=v;
+    window.__polishUtterance=u;
+    activeButton=button;
+    button.textContent='Reproduciendo…';
+    button.disabled=true;
+    u.onstart=()=>{
+      clearTimeout(watchdog);
+      watchdog=setTimeout(()=>{try{synth.cancel()}catch(e){} resetButton()},15000);
+    };
+    u.onend=resetButton;
+    u.onerror=resetButton;
+    // En iOS la llamada debe producirse directamente dentro del gesto del usuario.
+    synth.speak(u);
+    // Si WebKit no inicia la voz, nunca dejamos el botón bloqueado.
+    watchdog=setTimeout(()=>{
+      if(!synth.speaking){try{synth.cancel()}catch(e){} resetButton()}
+    },1800);
   }
 
   document.addEventListener('click',e=>{
-    const b=e.target.closest('#phr .listen, #trout .listen');
-    if(!b)return;
-    e.preventDefault();e.stopImmediatePropagation();
-    const row=b.closest('.ph, .result');
+    const button=e.target.closest('#phr .listen, #trout .listen');
+    if(!button)return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    const row=button.closest('.ph, .result');
     const text=row?.querySelector('.pl')?.textContent?.trim();
-    if(text)playPolish(text,b);
+    if(text)speakNow(text,button);
   },true);
+
+  if('speechSynthesis' in window){
+    try{speechSynthesis.getVoices()}catch(e){}
+    speechSynthesis.addEventListener?.('voiceschanged',()=>{try{speechSynthesis.getVoices()}catch(e){}});
+  }
 })();
