@@ -1,0 +1,2 @@
+Forzar nuevo despliegue de Vercel tras comprobar la integración GitHub → Vercel.
+2026-10-04
