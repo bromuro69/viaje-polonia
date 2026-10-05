@@ -57,3 +57,23 @@
   sdk.onerror=()=>console.warn('Sin conexión: se mantiene la copia local del itinerario.');
   document.head.appendChild(sdk);
 })();
+
+/* Formato práctico de las fichas Info: duración clara, sin ticket y zona debajo. */
+(()=>{
+  function formatInfoMeta(){
+    document.querySelectorAll('.infoMeta').forEach(meta=>{
+      if(meta.dataset.formatted)return;
+      const spans=[...meta.querySelectorAll('span')];
+      if(!spans.length)return;
+      const duration=spans.find(s=>s.textContent.includes('⏱'));
+      const zone=spans.find(s=>s.textContent.includes('📍'));
+      meta.replaceChildren();
+      if(duration){const d=document.createElement('span');d.textContent='Duración de la visita: '+duration.textContent.replace('⏱','').trim();d.style.cssText='display:block;width:100%';meta.appendChild(d)}
+      if(zone){const z=document.createElement('span');z.textContent='📍 Zona: '+zone.textContent.replace('📍','').trim();z.style.cssText='display:block;width:100%;margin-top:6px';meta.appendChild(z)}
+      meta.dataset.formatted='1';
+    });
+  }
+  new MutationObserver(formatInfoMeta).observe(document.body,{childList:true,subtree:true});
+  document.addEventListener('click',()=>setTimeout(formatInfoMeta,0));
+  formatInfoMeta();
+})();
