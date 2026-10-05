@@ -8,5 +8,8 @@
   if('speechSynthesis'in window){try{speechSynthesis.getVoices()}catch(e){}speechSynthesis.addEventListener?.('voiceschanged',()=>{try{speechSynthesis.getVoices()}catch(e){}})}
 })();
 
-/* Carga del módulo para añadir planes improvisados al día elegido. */
-(()=>{const s=document.createElement('script');s.src='improvisado.js?v=20261005-1';document.head.appendChild(s)})();
+/* Módulos auxiliares cargados una sola vez, sin observadores continuos. */
+(()=>{
+  const imp=document.createElement('script');imp.src='improvisado.js?v=20261005-1';document.head.appendChild(imp);
+  const fmt=document.createElement('script');fmt.src='info-format.js?v=20261005-1';document.head.appendChild(fmt);
+})();
