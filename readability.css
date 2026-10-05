@@ -1,0 +1,18 @@
+/* Ajuste global de legibilidad: aumenta texto útil sin agrandar en exceso títulos o controles. */
+@media (max-width: 700px){
+  body{font-size:19px}
+  .check{font-size:1.15rem!important;line-height:1.38!important}
+  .check small{font-size:1rem!important;line-height:1.4}
+  .saveHint{font-size:1rem!important;line-height:1.5!important}
+  .hint{font-size:1.07rem!important;line-height:1.5}
+  .curioIntro p{font-size:1.12rem!important;line-height:1.55}
+  .curioItem h3{font-size:1.16rem!important}
+  .curioItem p{font-size:1.10rem!important;line-height:1.6!important}
+  .infoText{font-size:1.10rem!important;line-height:1.64!important}
+  .infoTip span{font-size:1.06rem!important;line-height:1.55!important}
+  .infoCuriosity{font-size:1.10rem!important;line-height:1.64!important}
+  .ph .es{font-size:1.06rem}
+  .ph .pl,.ph .pron{font-size:1.10rem!important;line-height:1.48}
+  label{font-size:1.04rem}
+  .cashNote{font-size:1.08rem!important;line-height:1.5}
+}
