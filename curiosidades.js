@@ -1,0 +1,21 @@
+(()=>{
+const C={
+'Free tour por Cracovia':'El hejnał de la basílica de Santa María suena cada hora, día y noche, y la melodía se corta de golpe. La tradición lo relaciona con el trompetista que habría sido alcanzado mientras alertaba de una invasión tártara.',
+'Tarde: plaza, Planty o Wawel':'El dragón de Wawel no es solo una atracción moderna: es uno de los símbolos más antiguos y reconocibles de Cracovia y su leyenda forma parte de los relatos fundacionales de la ciudad.',
+'Auschwitz I':'El letrero original “Arbeit macht frei” fue robado en 2009 y cortado en tres partes. La policía lo recuperó apenas tres días después; el que se ve actualmente sobre la puerta es una copia.',
+'Birkenau (Auschwitz II)':'La vía que entra directamente en Birkenau no estuvo allí durante toda la existencia del campo: el ramal ferroviario interior se construyó en la primavera de 1944, durante la deportación masiva de judíos húngaros.',
+'Paseo por el centro de Varsovia':'Más del 85 % del centro histórico fue destruido en 1944. Su reconstrucción fue tan excepcional que la UNESCO protegió precisamente este casco histórico reconstruido como ejemplo único de recuperación casi total de una ciudad.',
+'Parque Łazienki / Ciudad Nueva':'Łazienki significa literalmente “baños”. El nombre procede de un antiguo pabellón de baños que acabó transformándose en el Palacio sobre la Isla. Hoy, además, los pavos reales y las ardillas son casi vecinos oficiales del parque.',
+'Calle Nowy Świat':'Nowy Świat forma parte de la Ruta Real de Varsovia, un eje histórico que enlaza el entorno del Castillo Real con las residencias reales del sur de la ciudad.',
+'Tour comunista por Varsovia':'El reloj de la torre del Palacio de la Cultura se estrenó en la Nochevieja de 2000/2001. Sus cuatro esferas miden 6 metros de diámetro y el mirador del piso 30 está a 114 metros de altura.',
+'Barrio de Praga':'En los patios de Praga sobreviven alrededor de un centenar de pequeños santuarios vecinales. Muchos surgieron durante la ocupación alemana como lugares de oración y consuelo para los habitantes del barrio.',
+'Kazimierz':'Kazimierz no nació como un simple barrio de Cracovia: fue durante siglos una ciudad independiente. Su antiguo mercado llegó a medir unos 195 × 195 metros y por él pasaba la ruta comercial de la sal hacia Wieliczka y Bochnia.',
+'Podgórze':'La Farmacia del Águila fue una farmacia que permaneció dentro del gueto de Cracovia. Su propietario, Tadeusz Pankiewicz, fue un testigo excepcional de lo ocurrido y el lugar es hoy parte de la Ruta de la Memoria del Museo de Cracovia.',
+'Fábrica de Schindler':'Antes de Schindler, la fábrica se llamaba “Rekord” y había sido fundada en 1937 por tres empresarios judíos. Schindler se hizo cargo de la empresa tras la ocupación alemana y posteriormente la convirtió en Deutsche Emailwarenfabrik.',
+'Lonja de los Paños':'Busca un gran cuchillo de hierro colgado bajo los soportales de la Sukiennice. Una leyenda lo relaciona con los dos hermanos que construyeron las torres desiguales de Santa María y con un asesinato provocado por los celos.',
+'Minas de sal de Wieliczka':'La capilla de Santa Kinga está a más de 100 metros bajo tierra. Gran parte de su decoración fue tallada por mineros en la propia sal, convirtiendo una mina en un espacio monumental subterráneo.'
+};
+const css=document.createElement('style');css.textContent='.infoCuriosity{margin-top:14px;padding:13px 14px;border-radius:14px;background:#f4eee3;border:1px solid #e4d8c8;color:#26332f;font-size:13px;line-height:1.48}.infoCuriosity b{display:block;margin-bottom:5px;color:#7f1d1d;font-size:12px;letter-spacing:.02em}';document.head.appendChild(css);
+function put(key){const m=document.getElementById('infoModal');if(!m||!C[key])return;const body=m.querySelector('.infoBody');if(!body)return;body.querySelector('.infoCuriosity')?.remove();const box=document.createElement('div');box.className='infoCuriosity';box.innerHTML='<b>💡 ¿Sabías que…?</b><span></span>';box.querySelector('span').textContent=C[key];const tip=body.querySelector('.infoTip');tip?body.insertBefore(box,tip):body.appendChild(box)}
+document.addEventListener('click',e=>{const b=e.target.closest('.infoBtn');if(!b)return;setTimeout(()=>put(b.dataset.info),0)},true);
+})();
