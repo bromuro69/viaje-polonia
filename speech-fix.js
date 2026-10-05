@@ -12,4 +12,5 @@
 (()=>{
   const imp=document.createElement('script');imp.src='improvisado.js?v=20261005-1';document.head.appendChild(imp);
   const fmt=document.createElement('script');fmt.src='info-format.js?v=20261005-1';document.head.appendChild(fmt);
+  const cur=document.createElement('script');cur.src='curiosidades.js?v=20261005-1';document.head.appendChild(cur);
 })();
