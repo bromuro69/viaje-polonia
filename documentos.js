@@ -9,7 +9,29 @@ function show(activity){document.querySelector('.familyShade')?.remove();const s
 const h=document.createElement('h2');h.textContent='Documentos del viaje';panel.append(h);const intro=document.createElement('p');intro.textContent='Entradas y reservas originales, protegidas para la familia.';panel.append(intro);
 const msg=document.createElement('p');msg.className='familyError';panel.append(msg);
 const close=document.createElement('button');close.textContent='Cerrar';close.onclick=()=>shade.remove();
-async function list(){panel.querySelectorAll('.familyDoc,.familyLogin,.familyEmpty').forEach(e=>e.remove());msg.textContent='Cargando…';try{const r=await call('list');checked=true;docs=r.documents||[];msg.textContent='';const selected=docs.filter(x=>x.activity_id===activity);if(!selected.length){const p=document.createElement('p');p.className='familyEmpty';p.textContent='Todavía no hay documentos originales cargados para esta actividad.';panel.insertBefore(p,close)}else selected.forEach(d=>{const row=document.createElement('div');row.className='familyDoc';const name=document.createElement('span');name.textContent=d.title;const b=document.createElement('button');b.textContent='Abrir documento';b.onclick=async()=>{b.disabled=true;try{const r=await call('open',{id:d.id});window.open(r.url,'_blank','noopener')}catch(e){msg.textContent=e.message}finally{b.disabled=false}};row.append(name,b);panel.insertBefore(row,close)})}catch(e){checked=false;if(/Sesión caducada|Acceso familiar necesario/.test(e.message)){token='';localStorage.removeItem(KEY);login()}else msg.textContent=e.message}}
+async function list(){panel.querySelectorAll('.familyDoc,.familyLogin,.familyEmpty,.familyUpload').forEach(e=>e.remove());msg.textContent='Cargando…';try{const r=await call('list');checked=true;docs=r.documents||[];msg.textContent='';const selected=docs.filter(x=>x.activity_id===activity);if(!selected.length){const p=document.createElement('p');p.className='familyEmpty';p.textContent='Todavía no hay documentos originales cargados para esta actividad.';panel.insertBefore(p,close)}else selected.forEach(d=>{const row=document.createElement('div');row.className='familyDoc';const name=document.createElement('span');name.textContent=d.title;const b=document.createElement('button');b.textContent='Abrir documento';b.onclick=async()=>{b.disabled=true;try{const r=await call('open',{id:d.id});window.open(r.url,'_blank','noopener')}catch(e){msg.textContent=e.message}finally{b.disabled=false}};row.append(name,b);panel.insertBefore(row,close)});uploadControls()}catch(e){checked=false;if(/Sesión caducada|Acceso familiar necesario/.test(e.message)){token='';localStorage.removeItem(KEY);login()}else msg.textContent=e.message}}
+function uploadControls(){
+ const wrap=document.createElement('div');wrap.className='familyUpload';wrap.style.cssText='border-top:1px solid #d5c4bd;margin-top:16px;padding-top:12px';
+ const h=document.createElement('p');h.textContent='Añadir billetes o reservas (PDF o imagen, máximo 15 MB cada uno)';wrap.append(h);
+ const input=document.createElement('input');input.type='file';input.accept='.pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/*';input.multiple=true;input.style.cssText='display:block;max-width:100%;margin:10px 0';wrap.append(input);
+ const upload=document.createElement('button');upload.textContent='Subir documentos';wrap.append(upload);
+ const status=document.createElement('p');status.setAttribute('aria-live','polite');wrap.append(status);
+ upload.onclick=async()=>{
+  if(!input.files?.length){status.textContent='Selecciona al menos un archivo';return}
+  upload.disabled=true;let count=0;
+  try{
+   for(const file of input.files){
+    status.textContent='Subiendo '+(count+1)+' de '+input.files.length+'…';
+    const form=new FormData();form.append('action','upload');form.append('token',token);form.append('activity_id',activity);form.append('title',file.name);form.append('file',file);
+    const res=await fetch(ENDPOINT,{method:'POST',body:form});const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw Error(data.error||'No se pudo subir '+file.name);count++;
+   }
+   status.textContent=count+' documento(s) guardado(s) correctamente';input.value='';await list();
+  }catch(e){status.textContent='Subidos '+count+'. Error: '+e.message}
+  finally{upload.disabled=false}
+ };
+ panel.insertBefore(wrap,close);
+}
 function login(){panel.querySelectorAll('.familyLogin,.familyDoc,.familyEmpty').forEach(e=>e.remove());msg.textContent='';const area=document.createElement('div');area.className='familyLogin';const p=document.createElement('p');p.textContent='Introduce la clave familiar de seis cifras. El acceso se recordará durante 30 días en este dispositivo.';const input=document.createElement('input');input.type='password';input.inputMode='numeric';input.maxLength=6;input.autocomplete='off';input.placeholder='••••••';input.setAttribute('aria-label','Clave familiar');const b=document.createElement('button');b.textContent='Acceder';b.onclick=async()=>{b.disabled=true;msg.textContent='';try{const r=await call('login',{pin:input.value});token=r.token;localStorage.setItem(KEY,token);area.remove();list()}catch(e){msg.textContent=e.message}finally{b.disabled=false}};input.onkeydown=e=>{if(e.key==='Enter')b.click()};area.append(p,input,b);panel.insertBefore(area,close)}
 panel.append(close);if(token)list();else login()}
 const mapping=[[/free tour/i,'free-tour'],[/Auschwitz I|Birkenau/i,'auschwitz'],[/Tren Cracovia/i,'train-to-warsaw'],[/Tren Varsovia/i,'train-to-krakow'],[/Comer en Starka/i,'starka'],[/Fábrica de Schindler/i,'schindler'],[/Minas de sal/i,'wieliczka'],[/Cena en Morskie Oko/i,'morskie-oko']];
