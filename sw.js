@@ -1,4 +1,4 @@
-const STATIC_CACHE='polonia-static-v5';
+const STATIC_CACHE='polonia-static-v6';
 const IMAGE_CACHE='polonia-images-v1';
 const MAX_IMAGES=40;
 const CORE=['/','/index.html','/styles.css','/readability.css','/nav-strip.css','/app.js','/sync.js','/speech-fix.js','/info.js','/reservas.js','/documentos.js','/info-format.js','/curiosidades.js','/improvisado.js','/manifest.webmanifest','/poland-mark.svg','/polonia-icon.png'];
