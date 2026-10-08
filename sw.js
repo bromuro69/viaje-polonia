@@ -1,7 +1,7 @@
-const STATIC_CACHE='polonia-static-v3';
+const STATIC_CACHE='polonia-static-v4';
 const IMAGE_CACHE='polonia-images-v1';
 const MAX_IMAGES=40;
-const CORE=['/','/index.html','/styles.css','/readability.css','/nav-strip.css','/app.js','/sync.js','/speech-fix.js','/info.js','/info-format.js','/curiosidades.js','/improvisado.js','/manifest.webmanifest','/poland-mark.svg','/polonia-icon.png'];
+const CORE=['/','/index.html','/styles.css','/readability.css','/nav-strip.css','/app.js','/sync.js','/speech-fix.js','/info.js','/reservas.js','/info-format.js','/curiosidades.js','/improvisado.js','/manifest.webmanifest','/poland-mark.svg','/polonia-icon.png'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(STATIC_CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting()));
